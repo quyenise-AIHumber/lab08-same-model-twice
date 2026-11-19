@@ -1,0 +1,24 @@
+{
+  "selected_experiment": "wide_net",
+  "selection_rule": "lowest validation MAE at best validation-loss epoch",
+  "split_sizes": {
+    "train": 3600,
+    "val": 1200,
+    "test": 1200
+  },
+  "units": "bikes rented (MAE)",
+  "training_mean": {
+    "validation_mae": 10.153898239135742,
+    "test_mae": 9.649139404296875
+  },
+  "linear_regression": {
+    "validation_mae": 9.31691837310791,
+    "test_mae": 8.572918891906738
+  },
+  "network": {
+    "validation_mae": 2.7481677532196045,
+    "test_mae": 2.6228106021881104,
+    "best_epoch_by_val_loss": 77,
+    "best_validation_loss": 16.979881235758462
+  }
+}
