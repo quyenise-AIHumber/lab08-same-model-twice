@@ -1,4 +1,4 @@
-# Lakeshore Bike Demand
+# Lakeshore Bike Demand: The Same Model in PyTorch and Keras
 
 ## What it does
 
@@ -10,30 +10,48 @@ The project builds a neural network with a custom Dataset, DataLoaders and a han
 
 The goal is to determine whether nonlinear modelling provides additional predictive value.
 
+
 ## How to run it
 
-Create and activate the Conda environment:
+Create the Conda environment:
 
-```
+```powershell
 conda env create -f environment.yml
-conda activate lab07-first-principles
+conda activate lab08-same-model-twice
 ```
 
-Generate the results and figures:
+Use Keras with the TensorFlow backend:
 
+```powershell
+$env:KERAS_BACKEND = "tensorflow"
 ```
+
+Generate the PyTorch reports:
+
+```powershell
 python train.py
 ```
 
-Run the required quality checks:
+Generate the Keras reports:
 
+```powershell
+python train_keras.py
 ```
+
+Run the three-seed comparison:
+
+```powershell
+python compare.py
+```
+
+Run the quality checks:
+
+```powershell
 python -m ruff format --check .
 python -m ruff check .
 python -m pytest
 ```
 
-The training script automatically generates the evaluation reports, experiment results and learning curves in the `reports/` folder.
 
 ## Data and split
 
@@ -270,6 +288,77 @@ The results support three conclusions:
 From a business perspective, better hourly demand forecasts could support more informed bicycle-repositioning and station-capacity decisions.
 
 However, operational improvements and cost savings have not been measured in this project.
+
+
+## The Keras version
+
+Lab 08 rebuilds the Lab 07 PyTorch neural network using Keras 3
+with the TensorFlow backend.
+
+Both models use the same 8-32-32-1 architecture, prepared data,
+loss function, Adam optimizer, learning rate, batch size and
+80-epoch training budget.
+
+The models were verified to have matching parameter counts.
+PyTorch weights were transposed and transferred into Keras,
+and predictions were compared on the validation rows.
+
+The Keras training script uses:
+
+- `compile()` to configure optimization and metrics
+- `fit()` to execute training
+- `EarlyStopping` to restore the best validation-loss weights
+- `ModelCheckpoint` to save the best model
+
+The main Keras training history is saved in
+`reports/history_keras.csv`.
+
+![Keras learning curves](reports/learning_curves_keras.png)
+
+### Three-seed comparison
+
+The frameworks were evaluated using seeds 42, 43 and 44.
+
+| Metric | PyTorch | Keras |
+|---|---:|---:|
+| Mean validation MAE | 5.522 | 4.616 |
+| Mean test MAE | 5.350 | 4.523 |
+| Test MAE standard deviation | 0.174 | 0.670 |
+| Mean training seconds | 4.326 | 12.352 |
+
+Keras achieved approximately 15.5% lower mean test MAE.
+PyTorch trained approximately 2.86 times faster in the
+measured environment and had lower variation across seeds.
+
+These results are specific to the synthetic dataset and
+the tested software environment.
+
+The full six-run results are in `reports/comparison.csv`.
+
+See [COMPARISON.md](COMPARISON.md) for the evidence-based
+framework recommendation and trade-offs.
+
+## Tests
+
+The automated tests cover:
+
+- PyTorch data preparation and training
+- Equivalent Keras architecture and parameter counts
+- PyTorch-to-Keras weight transfer
+- Identical prepared input rows
+- Prediction equivalence
+- Small-batch learning
+- Model saving and reloading
+- Best-weight restoration
+- Seed repeatability
+- Comparison output structure and result integrity
+
+Run the full suite:
+
+```powershell
+python -m pytest -v
+```
+
 
 ## Limitations
 
